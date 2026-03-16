@@ -1,13 +1,109 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>emmophoto</title>
+<style>
+
+body {
+  font-family: Arial;
+  margin: 40px;
+  background: #fafafa;
+}
+
+h1 {
+  text-align: center;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.hero img {
+  max-width: 700px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.hero p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.gallery {
+  column-count: 3;
+  column-gap: 10px;
+}
+
+.gallery img {
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .gallery { column-count: 2; }
+}
+
+@media (max-width: 500px) {
+  .gallery { column-count: 1; }
+}
+
+/* lightbox */
+
+#lightbox {
+  position: fixed;
+  display: none;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.9);
+}
+
+#lightbox img {
+  display:block;
+  max-width:90%;
+  max-height:90%;
+  margin:5% auto;
+}
+
+</style>
 </head>
+
+<body>
 
 <div class="hero">
 
 <h1>emmo photo</h1>
 
-<img src="photos/featured.jpg" alt="hello">
+<img src="photos/featured.jpg">
 
 </div>
+<div class="gallery">
+
+<img src="photos/yosemite.jpg">
+<img src="photos/sunset.jpg">
+<img src="photos/ocean.jpg">
+<img src="photos/street.jpg">
+
+</div>
+
+<div id="lightbox" onclick="this.style.display='none'">
+  <img id="lightbox-img">
+</div>
+
+<script>
+
+const images = document.querySelectorAll(".gallery img")
+const lightbox = document.getElementById("lightbox")
+const lightboxImg = document.getElementById("lightbox-img")
+
+images.forEach(img => {
+  img.onclick = () => {
+    lightbox.style.display = "block"
+    lightboxImg.src = img.src
+  }
+})
+
+</script>
+
+</body>
+</html>
