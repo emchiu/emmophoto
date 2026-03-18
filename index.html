@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>emmo photo</title>
+
 <style>
 
 body {
@@ -8,6 +14,15 @@ body {
 
 h1 {
   text-align: center;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .hero {
@@ -36,6 +51,11 @@ h1 {
   margin-bottom: 10px;
   border-radius: 6px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.gallery img:hover {
+  transform: scale(1.02);
 }
 
 @media (max-width: 800px) {
@@ -56,6 +76,7 @@ h1 {
   width:100%;
   height:100%;
   background: rgba(0,0,0,0.9);
+  z-index: 1000;
 }
 
 #lightbox img {
@@ -71,37 +92,70 @@ h1 {
 <body>
 
 <div class="hero">
-
-<h1>emmo photo</h1>
-
-<img src="photos/featured.jpg">
-
-</div>
-<div class="gallery">
-
-<img src="photos/chinatown1.jpg">
-<img src="photos/chinatown2.jpg">
-<img src="photos/chinatown3.jpg">
-<img src="photos/chinatown4.jpg">
-<img src="photos/chinatown5.jpg">
-
+  <h1>emmo photo</h1>
+  <img src="photos/featured.jpg">
 </div>
 
+<div id="gallery-container"></div>
+
+<!-- Lightbox -->
 <div id="lightbox" onclick="this.style.display='none'">
   <img id="lightbox-img">
 </div>
 
 <script>
 
-const images = document.querySelectorAll(".gallery img")
-const lightbox = document.getElementById("lightbox")
-const lightboxImg = document.getElementById("lightbox-img")
+const username = "emchiu"
+const repo = "emmochiu.github.io"
+const baseFolder = "photos"
 
-images.forEach(img => {
-  img.onclick = () => {
-    lightbox.style.display = "block"
-    lightboxImg.src = img.src
-  }
+const sections = [
+  {title: "sf chinatown | lny 2026", folder: "2026:03 chinatown"},
+  {title: "bay area | jan-mar 2026", folder: "2026:03 bay area"},
+  {title: "chicago | summertime 2025", folder: "2025:08 chicago"},
+  {title: "sf | may 2025", folder: "2025:05 bay area"},
+  {title: "torres del paine | mar 2025", folder: "2025:03 torres del paine"},
+  // add more sections here:
+  // {title: "Japan Trip", folder: "japan"},
+]
+
+const container = document.getElementById("gallery-container")
+
+sections.forEach(section => {
+
+  const title = document.createElement("h2")
+  title.textContent = section.title
+  container.appendChild(title)
+
+  const gallery = document.createElement("div")
+  gallery.className = "gallery"
+  container.appendChild(gallery)
+
+  fetch(`https://api.github.com/repos/${username}/${repo}/contents/${baseFolder}/${section.folder}`)
+    .then(response => response.json())
+    .then(data => {
+
+      data.forEach(file => {
+
+        if (file.type === "file" && !file.name.includes("featured")) {
+
+          const img = document.createElement("img")
+          img.src = file.download_url
+
+          // lightbox click
+          img.onclick = () => {
+            document.getElementById("lightbox").style.display = "block"
+            document.getElementById("lightbox-img").src = img.src
+          }
+
+          gallery.appendChild(img)
+
+        }
+
+      })
+
+    })
+
 })
 
 </script>
