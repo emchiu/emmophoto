@@ -74,20 +74,17 @@ h2::after {
 }
 
 .gallery {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  display: block; /* Masonry takes over */
+}
 
-  /* 👇 magic */
-  grid-auto-rows: 10px;
+.gallery-item {
+  width: calc(33.333% - 10px);
+  margin-bottom: 10px;
 }
 
 .gallery img {
   width: 100%;
-  margin-bottom: 10px;
-  border-radius: 0px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+  display: block;
 }
 
 .gallery img:hover {
@@ -95,14 +92,14 @@ h2::after {
 }
 
 @media (max-width: 800px) {
-  .gallery {
-    grid-template-columns: repeat(2, 1fr);
+  .gallery-item {
+    width: calc(50% - 10px);
   }
 }
 
 @media (max-width: 500px) {
-  .gallery {
-    grid-template-columns: repeat(1, 1fr);
+  .gallery-item {
+    width: 100%;
   }
 }
 
@@ -155,6 +152,9 @@ h2::after {
 </head>
 
 <body>
+
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 
 <div class="hero">
   <h1>emmo photo</h1>
@@ -243,17 +243,6 @@ function showPrev() {
   document.getElementById("lightbox-img").src = currentImages[currentIndex]
 }
 
-function resizeGridItem(item) {
-  const grid = item.parentElement
-  const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'))
-  const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('row-gap'))
-
-  const height = item.getBoundingClientRect().height
-  const rowSpan = Math.ceil((height + rowGap) / (rowHeight + rowGap))
-
-  item.style.gridRowEnd = "span " + rowSpan
-}
-
 sections.forEach(section => {
 
   const sectionDiv = document.createElement("div")
@@ -267,51 +256,43 @@ sections.forEach(section => {
   const heroImg = document.createElement("img")
   heroImg.src = `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${section.hero}`
   heroImg.className = "section-hero"
-
-  heroImg.onclick = () => {
-    document.getElementById("lightbox").style.display = "block"
-    document.getElementById("lightbox-img").src = heroImg.src
-  }
-
   sectionDiv.appendChild(heroImg)
 
-  // gallery
   const gallery = document.createElement("div")
   gallery.className = "gallery"
   sectionDiv.appendChild(gallery)
 
   const imageUrls = section.images.map(filename =>
-  `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${filename}`
-)
+    `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${filename}`
+  )
 
-section.images.forEach((filename, index) => {
+  section.images.forEach((filename, index) => {
 
-  const img = document.createElement("img")
-  img.src = imageUrls[index]
+    const img = document.createElement("img")
+    img.src = imageUrls[index]
 
-  img.onload = () => resizeGridItem(img)
+    img.onclick = () => {
+      openLightbox(imageUrls, index)
+    }
 
-  // ✅ NEW onclick (this is the key change)
-  img.onclick = () => {
-    openLightbox(imageUrls, index)
-  }
+    const item = document.createElement("div")
+    item.className = "gallery-item"
 
-  gallery.appendChild(img)
+    item.appendChild(img)
+    gallery.appendChild(item)
 
-})
-
-})
-
-window.addEventListener("load", () => {
-  document.querySelectorAll(".gallery img").forEach(img => {
-    resizeGridItem(img)
   })
-})
 
-window.addEventListener("resize", () => {
-  document.querySelectorAll(".gallery img").forEach(img => {
-    resizeGridItem(img)
+  // ✅ Masonry init
+  imagesLoaded(gallery, function () {
+    new Masonry(gallery, {
+      itemSelector: '.gallery-item',
+      columnWidth: '.gallery-item',
+      percentPosition: true,
+      gutter: 10
+    })
   })
+
 })
 
 setTimeout(() => {
