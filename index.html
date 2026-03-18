@@ -187,7 +187,7 @@ sections.forEach(section => {
         if (file.type === "file" && !file.name.includes("featured")) {
 
           const img = document.createElement("img")
-          img.src = file.download_url
+          img.src = `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${file.name}`
 
           // lightbox click
           img.onclick = () => {
