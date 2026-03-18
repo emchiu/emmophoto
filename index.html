@@ -4,16 +4,31 @@
 <head>
   <title>emmo photo</title>
 
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>emmo photo</title>
+
 <style>
 
 body {
-  font-family: Arial;
+  font-family: Century Gothic;
   margin: 40px;
   background: #fafafa;
 }
 
 h1 {
   text-align: center;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 h2 {
@@ -56,6 +71,11 @@ h2 {
 
 .gallery img:hover {
   transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+.gallery img:hover {
+  transform: scale(1.02);
 }
 
 @media (max-width: 800px) {
@@ -77,6 +97,7 @@ h2 {
   height:100%;
   background: rgba(0,0,0,0.9);
   z-index: 1000;
+  z-index: 1000;
 }
 
 #lightbox img {
@@ -94,8 +115,13 @@ h2 {
 <div class="hero">
   <h1>emmo photo</h1>
   <img src="photos/featured.jpg">
+  <h1>emmo photo</h1>
+  <img src="photos/featured.jpg">
 </div>
 
+<div id="gallery-container"></div>
+
+<!-- Lightbox -->
 <div id="gallery-container"></div>
 
 <!-- Lightbox -->
