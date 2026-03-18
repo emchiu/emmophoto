@@ -77,6 +77,9 @@ h2::after {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+
+  /* 👇 magic */
+  grid-auto-rows: 10px;
 }
 
 .gallery img {
@@ -240,6 +243,17 @@ function showPrev() {
   document.getElementById("lightbox-img").src = currentImages[currentIndex]
 }
 
+function resizeGridItem(item) {
+  const grid = item.parentElement
+  const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'))
+  const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('row-gap'))
+
+  const height = item.getBoundingClientRect().height
+  const rowSpan = Math.ceil((height + rowGap) / (rowHeight + rowGap))
+
+  item.style.gridRowEnd = "span " + rowSpan
+}
+
 sections.forEach(section => {
 
   const sectionDiv = document.createElement("div")
@@ -275,6 +289,8 @@ section.images.forEach((filename, index) => {
   const img = document.createElement("img")
   img.src = imageUrls[index]
 
+  img.onload = () => resizeGridItem(img)
+
   // ✅ NEW onclick (this is the key change)
   img.onclick = () => {
     openLightbox(imageUrls, index)
@@ -284,6 +300,18 @@ section.images.forEach((filename, index) => {
 
 })
 
+})
+
+window.addEventListener("load", () => {
+  document.querySelectorAll(".gallery img").forEach(img => {
+    resizeGridItem(img)
+  })
+})
+
+window.addEventListener("resize", () => {
+  document.querySelectorAll(".gallery img").forEach(img => {
+    resizeGridItem(img)
+  })
 })
 
 setTimeout(() => {
@@ -308,6 +336,9 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") lightbox.style.display = "none"
   }
 })
+
+
+
 
 </script>
 
