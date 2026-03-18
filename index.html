@@ -22,7 +22,20 @@ h2 {
   margin-bottom: 20px;
   font-weight: 400;
   letter-spacing: 1px;
-  text-transform: lowercase;
+  text-transform: uppercase;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h2::before,
+h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ccc;
+  margin: 0 15px;
 }
 
 h3 {
@@ -32,6 +45,17 @@ h3 {
   font-weight: 200;
   letter-spacing: 1px;
   text-transform: lowercase;
+}
+
+.section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero {
@@ -132,13 +156,17 @@ const container = document.getElementById("gallery-container")
 
 sections.forEach(section => {
 
+  const sectionDiv = document.createElement("div")
+  sectionDiv.className = "section"
+  container.appendChild(sectionDiv)
+
   const title = document.createElement("h2")
   title.textContent = section.title
-  container.appendChild(title)
+  sectionDiv.appendChild(title)
 
   const gallery = document.createElement("div")
   gallery.className = "gallery"
-  container.appendChild(gallery)
+  sectionDiv.appendChild(gallery)
 
   fetch(`https://api.github.com/repos/${username}/${repo}/contents/${baseFolder}/${section.folder}`)
     .then(response => response.json())
@@ -165,6 +193,20 @@ sections.forEach(section => {
 
     })
 
+})
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible")
+    }
+  })
+}, {
+  threshold: 0.1
+})
+
+document.querySelectorAll(".section").forEach(section => {
+  observer.observe(section)
 })
 
 </script>
