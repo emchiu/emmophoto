@@ -44,6 +44,14 @@ h2::after {
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
+.section-hero {
+  width: 100%;
+  max-width: 800px;
+  display: block;
+  margin: 20px auto;
+  border-radius: 8px;
+}
+
 .section.visible {
   opacity: 1;
   transform: translateY(0);
@@ -166,18 +174,6 @@ const sections = [
   }
 ]
 
-const heroImg = document.createElement("img")
-
-heroImg.src = `https://raw.githubusercontent.com/${username}/${repo}/${branch}/photos/${section.folder}/${section.hero}`
-
-heroImg.style.width = "100%"
-heroImg.style.maxWidth = "800px"
-heroImg.style.display = "block"
-heroImg.style.margin = "20px auto"
-heroImg.style.borderRadius = "8px"
-
-sectionDiv.appendChild(heroImg)
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -200,34 +196,36 @@ sections.forEach(section => {
   title.textContent = section.title
   sectionDiv.appendChild(title)
 
+  // ✅ HERO IMAGE (FIXED)
+  const heroImg = document.createElement("img")
+  heroImg.src = `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${section.hero}`
+  heroImg.className = "section-hero"
+
+  heroImg.onclick = () => {
+    document.getElementById("lightbox").style.display = "block"
+    document.getElementById("lightbox-img").src = heroImg.src
+  }
+
+  sectionDiv.appendChild(heroImg)
+
+  // gallery
   const gallery = document.createElement("div")
   gallery.className = "gallery"
   sectionDiv.appendChild(gallery)
 
-  fetch(`https://api.github.com/repos/${username}/${repo}/contents/${baseFolder}/${section.folder}`)
-    .then(response => response.json())
-    .then(data => {
+  section.images.forEach(filename => {
 
-      data.forEach(file => {
+    const img = document.createElement("img")
+    img.src = `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${filename}`
 
-        if (file.type === "file" && !file.name.includes("featured")) {
+    img.onclick = () => {
+      document.getElementById("lightbox").style.display = "block"
+      document.getElementById("lightbox-img").src = img.src
+    }
 
-          const img = document.createElement("img")
-          img.src = `https://raw.githubusercontent.com/${username}/${repo}/main/${baseFolder}/${section.folder}/${file.name}`
+    gallery.appendChild(img)
 
-          // lightbox click
-          img.onclick = () => {
-            document.getElementById("lightbox").style.display = "block"
-            document.getElementById("lightbox-img").src = img.src
-          }
-
-          gallery.appendChild(img)
-
-        }
-
-      })
-
-    })
+  })
 
 })
 
@@ -236,10 +234,6 @@ setTimeout(() => {
     observer.observe(section)
   })
 }, 500)
-
-document.querySelectorAll(".section").forEach(section => {
-  observer.observe(section)
-})
 
 </script>
 
