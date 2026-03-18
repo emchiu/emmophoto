@@ -143,14 +143,24 @@ const repo = "emmochiu.github.io"
 const baseFolder = "photos"
 
 const sections = [
-  {title: "sf chinatown | lny 2026", folder: "2026_03 chinatown"},
-  {title: "bay area | jan-mar 2026", folder: "2026_03 bay area"},
-  {title: "chicago | summertime 2025", folder: "2025_08 chicago"},
-  {title: "sf | may 2025", folder: "2025_05 bay area"},
-  {title: "torres del paine | mar 2025", folder: "2025_03 torres del paine"},
+  {title: "sf chinatown | lny 2026", folder: "2026_03_chinatown"},
+  {title: "bay area | jan-mar 2026", folder: "2026_03_bay_area"},
+  {title: "chicago | summertime 2025", folder: "2025_08_chicago"},
+  {title: "sf | may 2025", folder: "2025_05_bay_area"},
+  {title: "torres del paine | mar 2025", folder: "2025_03_torres_del_paine"},
   // add more sections here:
   // {title: "Japan Trip", folder: "japan"},
 ]
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible")
+    }
+  })
+}, {
+  threshold: 0.1
+})
 
 const container = document.getElementById("gallery-container")
 
@@ -195,15 +205,11 @@ sections.forEach(section => {
 
 })
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible")
-    }
+setTimeout(() => {
+  document.querySelectorAll(".section").forEach(section => {
+    observer.observe(section)
   })
-}, {
-  threshold: 0.1
-})
+}, 500)
 
 document.querySelectorAll(".section").forEach(section => {
   observer.observe(section)
